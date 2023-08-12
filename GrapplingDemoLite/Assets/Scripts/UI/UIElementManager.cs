@@ -27,6 +27,8 @@ public class UIElementManager : MonoBehaviour
     [HideInInspector] public GameObject nearestGrapplePointUI = null;
     [HideInInspector] public GameObject prevNearestGrapplePointUI = null;
 
+    public IndicatorUIManager indicatorManager;
+
 
     void Start()
     {
@@ -43,9 +45,9 @@ public class UIElementManager : MonoBehaviour
         StartCoroutine(CheckDistanceAndShowGrapplePoints());
     }
 
-    void Update()
+    private void Update()
     {
-        
+        UpdateOutOfViewIndicator();
     }
 
     private void InitGrapplePointsUI(GrapplePoint[] grapplePointsList)
@@ -63,7 +65,6 @@ public class UIElementManager : MonoBehaviour
         while (true)
         {
             float minDist = float.MaxValue;
-            // nearestGrapplePointUI = null;
 
             foreach (GameObject gPointUI in grapplePointUIList)
             {
@@ -96,18 +97,28 @@ public class UIElementManager : MonoBehaviour
                 }
             }
 
-            if (prevNearestGrapplePointUI != null)
-            {
-                if (prevNearestGrapplePointUI != nearestGrapplePointUI || 
-                    (player.transform.position - prevNearestGrapplePointUI.transform.position).sqrMagnitude > gpActiveDistanceSqr)
-                {
-                    prevNearestGrapplePointUI.GetComponent<Image>().color = Color.white;
-                }
-            }
+            UpdateNearestGrapplePointUI();
 
-            if (nearestGrapplePointUI != null &&
-                (player.transform.position - nearestGrapplePointUI.transform.position).sqrMagnitude > gpShowMinDistanceSqr &&
-                (player.transform.position - nearestGrapplePointUI.transform.position).sqrMagnitude <= gpActiveDistanceSqr)
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
+
+    // 将距离屏幕中心点最近的抓钩点设为绿色
+    private void UpdateNearestGrapplePointUI()
+    {
+        if (prevNearestGrapplePointUI != null)
+        {
+            float prevNearestGPDistanceSqr = (player.transform.position - prevNearestGrapplePointUI.transform.position).sqrMagnitude;
+            if (prevNearestGrapplePointUI != nearestGrapplePointUI || prevNearestGPDistanceSqr > gpActiveDistanceSqr)
+            {
+                prevNearestGrapplePointUI.GetComponent<Image>().color = Color.white;
+            }
+        }
+
+        if (nearestGrapplePointUI != null)
+        {
+            float neareastGPDistanceSqr = (player.transform.position - nearestGrapplePointUI.transform.position).sqrMagnitude;
+            if (neareastGPDistanceSqr > gpShowMinDistanceSqr && neareastGPDistanceSqr <= gpActiveDistanceSqr)
             {
                 nearestGrapplePointUI.GetComponent<Image>().color = Color.green;
 
@@ -117,8 +128,36 @@ public class UIElementManager : MonoBehaviour
             {
                 nearestGrapplePointUI = null;
             }
+        }
+    }
 
-            yield return new WaitForSeconds(0.2f);
+    // 检测物体是否位于相机视野内
+    private bool IsInsideView(GameObject checkObj)
+    {
+        Vector3 viewPos = Camera.main.WorldToViewportPoint(checkObj.transform.position);
+        if (viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1 && viewPos.z > 0)
+            return true;
+        return false;
+    }
+
+    private void UpdateOutOfViewIndicator()
+    {
+        if (nearestGrapplePointUI != null)
+        {
+            Vector3 viewPos = Camera.main.WorldToViewportPoint(nearestGrapplePointUI.transform.position);
+            if (!(viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1 && viewPos.z > 0))
+            {
+                indicatorManager.targetObjPos = viewPos;
+                indicatorManager.ShowIndicator();
+            }
+            else
+            {
+                indicatorManager.HideIndicator();
+            }
+        }
+        else
+        {
+            indicatorManager.HideIndicator();
         }
     }
 }
