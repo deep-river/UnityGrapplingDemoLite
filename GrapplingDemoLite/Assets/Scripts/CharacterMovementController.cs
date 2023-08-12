@@ -72,11 +72,9 @@ public class CharacterMovementController : MonoBehaviour
         {
             float t = (Time.time - startTime) / travelDuration;
 
-            // gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, targetPos + offset, t);
             gameObject.transform.position = Vector3.LerpUnclamped(gameObject.transform.position, targetPos + offset, Mathf.SmoothStep(0, 1, t));
 
             yield return null;
         }
-        // gameObject.transform.position = targetPos;
     }
 }
