@@ -60,20 +60,20 @@ public class UIElementManager : MonoBehaviour
         while (true)
         {
             float minDist = float.MaxValue;
-            nearestGrapplePointUI = null;
+            // nearestGrapplePointUI = null;
 
             foreach (GameObject gPointUI in grapplePointUIList)
             {
                 // 检测抓钩点是否位于显示距离内
                 if ((player.transform.position - gPointUI.transform.position).sqrMagnitude < gpShowDistanceSqr)
                 {
+                    gPointUI.SetActive(true);
+                    gPointUI.transform.forward = Camera.main.transform.forward;
+
                     // 检测抓钩点与相机间是否存在遮挡
                     // 注：显示距离内被遮挡的抓钩点可为active但不参与最近点位的计算
                     if (!Physics.Linecast(Camera.main.transform.position, gPointUI.transform.position))
                     {
-                        gPointUI.SetActive(true);
-                        gPointUI.transform.forward = Camera.main.transform.forward;
-
                         // 计算距离屏幕中心位置最近的抓钩点
                         Vector2 uiCenter = Camera.main.WorldToScreenPoint(gPointUI.transform.position);
                         float dist = Vector2.Distance(uiCenter, screenCenter);
