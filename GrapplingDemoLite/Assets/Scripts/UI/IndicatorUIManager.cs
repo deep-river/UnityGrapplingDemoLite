@@ -5,83 +5,71 @@ using UnityEngine;
 public class IndicatorUIManager : MonoBehaviour
 {
     public GameObject indicator;
+    private RectTransform indicatorRect;
 
-    public float upperPosRatio = 0.9f;
-    public float lowerPosRatio = 0.1f;
-    public float leftPosRatio = 0.1f;
-    public float rightPosRatio = 0.1f;
-    private float upperYPos, lowerYPos;
-    private float leftXPos, rightXPos;
+    public float verticalPosRatio = 0.85f;
+    public float horizontalPosRatio = 0.85f;
 
-    [HideInInspector] public Vector3 targetObjPos;
+    private float verticalPos;
+    private float horizontalPos;
+
+    [HideInInspector] public Vector3 targetPos;
 
     private bool isShowing = false;
 
     void Start()
     {
-        upperYPos = upperPosRatio * Screen.height;
-        lowerYPos = lowerPosRatio * Screen.height;
-        leftXPos = leftPosRatio * Screen.width;
-        rightXPos = rightPosRatio * Screen.width;
+        indicatorRect = indicator.GetComponent<RectTransform>();
+
+        verticalPos = verticalPosRatio * Screen.height / 2f;
+        horizontalPos = horizontalPosRatio * Screen.width / 2f;
     }
 
     void Update()
     {
         if (isShowing)
         {
-            // 位于画面上方或下方
-            if (0 < targetObjPos.x && targetObjPos.x < 1)
-            {
-                float posX = Screen.width * targetObjPos.x;
-                // y > 1: 在上方
-                // y < 0: 在下方
-                if (targetObjPos.y > 1)
-                {
-                    indicator.transform.eulerAngles = new Vector3(0, 0, 180);
-                    indicator.transform.position = new Vector3(posX, upperYPos, 0);
-                }
-                else if (targetObjPos.y < 0)
-                {
-                    indicator.transform.eulerAngles = new Vector3(0, 0, 0);
-                    indicator.transform.position = new Vector3(posX, lowerYPos, 0);
-                }
-
-            }
-            // 位于画面左边或右边
-            else if (0 < targetObjPos.y && targetObjPos.y < 1)
-            {
-                // x < 0: 在左边
-                // x > 1: 在右边
-            }
-            indicator.SetActive(true);
+            UpdateIndicatorUI();
         }
     }
 
-    public void UpdateIndicatorUI(Vector3 objPos)
+    public void UpdateIndicatorUI()
     {
+        // Debug.Log(targetPos);
         // 位于画面上方或下方
-        if (0 < objPos.x && objPos.x < 1)
+        if (0 < targetPos.x && targetPos.x < 1)
         {
-            float posX = Screen.width * objPos.x;
+            float posX = Screen.width * targetPos.x - 0.5f * Screen.width;
             // y > 1: 在上方
             // y < 0: 在下方
-            if (objPos.y > 1)
+            if (targetPos.y > 1)
             {
                 indicator.transform.eulerAngles = new Vector3(0, 0, 180);
-                indicator.transform.position = new Vector3(posX, upperYPos, 0);
+                indicatorRect.localPosition = new Vector3(posX, verticalPos, 0);
             }
-            else if (objPos.y < 0)
+            else if (targetPos.y < 0)
             {
                 indicator.transform.eulerAngles = new Vector3(0, 0, 0);
-                indicator.transform.position = new Vector3(posX, lowerYPos, 0);
+                indicatorRect.localPosition = new Vector3(posX, -verticalPos, 0);
             }
 
         }
         // 位于画面左边或右边
-        else if (0 < objPos.y && objPos.y < 1)
+        else if (0 < targetPos.y && targetPos.y < 1)
         {
+            float posY = Screen.height * targetPos.y - 0.5f * Screen.height;
             // x < 0: 在左边
             // x > 1: 在右边
+            if (targetPos.x < 0)
+            {
+                indicator.transform.eulerAngles = new Vector3(0, 0, -90);
+                indicatorRect.localPosition = new Vector3(-horizontalPos, posY, 0);
+            }
+            else if (targetPos.x > 1)
+            {
+                indicator.transform.eulerAngles = new Vector3(0, 0, 90);
+                indicatorRect.localPosition = new Vector3(horizontalPos, posY, 0);
+            }
         }
         indicator.SetActive(true);
     }

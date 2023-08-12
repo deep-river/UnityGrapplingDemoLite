@@ -2951,7 +2951,9 @@ MonoBehaviour:
   lowerPosRatio: 0.1
   leftPosRatio: 0.1
   rightPosRatio: 0.1
-  targetObjPos: {x: 0, y: 0, z: 0}
+  horizontalPosRatio: 0.9
+  verticalPosRatio: 0.9
+  targetPos: {x: 0, y: 0, z: 0}
 --- !u!1 &1252425447
 GameObject:
   m_ObjectHideFlags: 0
