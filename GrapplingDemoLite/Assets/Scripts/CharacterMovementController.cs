@@ -14,7 +14,7 @@ public class CharacterMovementController : MonoBehaviour
 
     private Vector3 moveDirection;
 
-    public float gravity = -9.8f;
+    private Vector3 gravity = new Vector3(0, -15f, 0);
 
     private CharacterController controller;
 
@@ -39,13 +39,10 @@ public class CharacterMovementController : MonoBehaviour
         float z = Input.GetAxisRaw("Vertical");
 
         moveDirection = new Vector3(x, 0, z).normalized;
-
         if (controller.velocity != Vector3.zero)
         {
             targetRotation = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg + Camera.main.transform.eulerAngles.y;
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref rotationVelocity, RotationSmoothTime);
-
-            // rotate to face input direction relative to camera position
             transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
         }
 
@@ -64,6 +61,22 @@ public class CharacterMovementController : MonoBehaviour
             currentSpeed = moveSpeed;
         }
 
-        controller.Move(targetDirection.normalized * (currentSpeed * Time.deltaTime));
+        controller.Move(targetDirection.normalized * (currentSpeed * Time.deltaTime) + gravity * Time.deltaTime);
+    }
+
+    public IEnumerator LaunchToPosition(Vector3 targetPos, Vector3 offset, float travelDuration)
+    {
+        float startTime = Time.time;
+
+        while (Time.time < startTime + travelDuration)
+        {
+            float t = (Time.time - startTime) / travelDuration;
+
+            // gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, targetPos + offset, t);
+            gameObject.transform.position = Vector3.LerpUnclamped(gameObject.transform.position, targetPos + offset, Mathf.SmoothStep(0, 1, t));
+
+            yield return null;
+        }
+        // gameObject.transform.position = targetPos;
     }
 }

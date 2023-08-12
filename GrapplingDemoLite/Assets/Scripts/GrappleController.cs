@@ -5,42 +5,36 @@ using UnityEngine;
 public class GrappleController : MonoBehaviour
 {
     public UIElementManager uiManager;
-
-    public Transform grappleCastPoint;
-    private GameObject grappleTargetPoint;
-
-    public float grappleDelayTime;
-
-    public LineRenderer lr;
-
-    private bool grappling = false;
+    public LineRenderer lineRenderer;
 
     private CharacterMovementController movement;
 
-    // Start is called before the first frame update
+    public Transform grappleCastPoint;
+    private GameObject grappleTargetPoint;
+    private float grappleTravelDistance;
+
+    public float hookLaunchSpeed = 15f;
+    public float grappleTravelSpeed = 15f;
+    public Vector3 grappleTargetOffset = Vector3.zero;
+
+    private bool grappling = false;
+
     void Start()
     {
         movement = GetComponent<CharacterMovementController>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKey(KeyCode.F))
         {
-            if (!grappling)
-            {
-                StartGrapple();
-            }
+            if (!grappling) StartGrapple();
         }
     }
 
     private void LateUpdate()
     {
-        if (grappling)
-        {
-            lr.SetPosition(0, grappleCastPoint.transform.position);
-        }
+        if (grappling) lineRenderer.SetPosition(0, grappleCastPoint.transform.position);
     }
 
     private void StartGrapple()
@@ -50,10 +44,11 @@ public class GrappleController : MonoBehaviour
         if (grappleTargetPoint != null && grappleCastPoint != null)
         {
             grappling = true;
-            Invoke(nameof(ExecuteGrapple), grappleDelayTime);
+            grappleTravelDistance = Vector3.Distance(grappleCastPoint.position, grappleTargetPoint.transform.position);
+            Invoke(nameof(ExecuteGrapple), grappleTravelDistance / hookLaunchSpeed);
 
-            lr.enabled = true;
-            lr.SetPosition(1, grappleTargetPoint.transform.position);
+            lineRenderer.enabled = true;
+            lineRenderer.SetPosition(1, grappleTargetPoint.transform.position);
         }
     }
 
@@ -61,16 +56,18 @@ public class GrappleController : MonoBehaviour
     {
         movement.freeze = true;
 
-        Vector3 dir = grappleTargetPoint.transform.position - grappleCastPoint.position;
+        float travelDuration = grappleTravelDistance / grappleTravelSpeed;
 
-        StopGrapple();
+        StartCoroutine(movement.LaunchToPosition(grappleTargetPoint.transform.position, grappleTargetOffset, travelDuration));
+
+        Invoke(nameof(StopGrapple), travelDuration);
     }
 
     public void StopGrapple()
     {
         grappling = false;
         movement.freeze = false;
-        lr.enabled = false;
+        lineRenderer.enabled = false;
         grappleTargetPoint = null;
     }
 }
