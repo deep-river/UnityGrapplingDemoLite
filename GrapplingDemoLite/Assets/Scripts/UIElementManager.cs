@@ -65,14 +65,16 @@ public class UIElementManager : MonoBehaviour
             foreach (GameObject gPointUI in grapplePointUIList)
             {
                 // 检测抓钩点是否位于显示距离内
-                if ((player.transform.position - gPointUI.transform.position).sqrMagnitude < gpShowDistanceSqr)
+                float worldDistanceSqr = (player.transform.position - gPointUI.transform.position).sqrMagnitude;
+                if (worldDistanceSqr <= gpShowDistanceSqr)
                 {
                     gPointUI.SetActive(true);
                     gPointUI.transform.forward = Camera.main.transform.forward;
 
                     // 检测抓钩点与相机间是否存在遮挡
                     // 注：显示距离内被遮挡的抓钩点可为active但不参与最近点位的计算
-                    if (!Physics.Linecast(Camera.main.transform.position, gPointUI.transform.position))
+                    if (worldDistanceSqr <= gpActiveDistanceSqr && 
+                        !Physics.Linecast(Camera.main.transform.position, gPointUI.transform.position))
                     {
                         // 计算距离屏幕中心位置最近的抓钩点
                         Vector2 uiCenter = Camera.main.WorldToScreenPoint(gPointUI.transform.position);
@@ -91,16 +93,25 @@ public class UIElementManager : MonoBehaviour
                 }
             }
 
-            if (prevNearestGrapplePointUI != null && prevNearestGrapplePointUI != nearestGrapplePointUI)
+            if (prevNearestGrapplePointUI != null)
             {
-                prevNearestGrapplePointUI.GetComponent<Image>().color = Color.white;
+                if (prevNearestGrapplePointUI != nearestGrapplePointUI || 
+                    (player.transform.position - nearestGrapplePointUI.transform.position).sqrMagnitude > gpActiveDistanceSqr)
+                {
+                    prevNearestGrapplePointUI.GetComponent<Image>().color = Color.white;
+                }
             }
 
-            if (nearestGrapplePointUI != null && (player.transform.position - nearestGrapplePointUI.transform.position).sqrMagnitude < gpActiveDistanceSqr)
+            if (nearestGrapplePointUI != null && 
+                (player.transform.position - nearestGrapplePointUI.transform.position).sqrMagnitude <= gpActiveDistanceSqr)
             {
                 nearestGrapplePointUI.GetComponent<Image>().color = Color.green;
 
                 prevNearestGrapplePointUI = nearestGrapplePointUI;
+            }
+            else
+            {
+                nearestGrapplePointUI = null;
             }
 
             yield return new WaitForSeconds(0.2f);
