@@ -13,9 +13,11 @@ public class UIElementManager : MonoBehaviour
     public GameObject grapplePoints;
     public GameObject grapplePointPrefab;
 
-    public float grapplePointShowDistance = 15;
+    public float grapplePointShowMinDistance = 3;
+    public float grapplePointShowMaxDistance = 15;
     public float grapplePointActiveDistance = 12;
-    private float gpShowDistanceSqr;
+    private float gpShowMinDistanceSqr;
+    private float gpShowMaxDistanceSqr;
     private float gpActiveDistanceSqr;
 
     private List<GameObject> grapplePointUIList = new List<GameObject>();
@@ -28,7 +30,8 @@ public class UIElementManager : MonoBehaviour
 
     void Start()
     {
-        gpShowDistanceSqr = grapplePointShowDistance * grapplePointShowDistance;
+        gpShowMinDistanceSqr = grapplePointShowMinDistance * grapplePointShowMinDistance;
+        gpShowMaxDistanceSqr = grapplePointShowMaxDistance * grapplePointShowMaxDistance;
         gpActiveDistanceSqr = grapplePointActiveDistance * grapplePointActiveDistance;
 
         player = GameObject.FindWithTag("Player");
@@ -66,14 +69,14 @@ public class UIElementManager : MonoBehaviour
             {
                 // 检测抓钩点是否位于显示距离内
                 float worldDistanceSqr = (player.transform.position - gPointUI.transform.position).sqrMagnitude;
-                if (worldDistanceSqr <= gpShowDistanceSqr)
+                if (worldDistanceSqr <= gpShowMaxDistanceSqr)
                 {
                     gPointUI.SetActive(true);
                     gPointUI.transform.forward = Camera.main.transform.forward;
 
                     // 检测抓钩点与相机间是否存在遮挡
                     // 注：显示距离内被遮挡的抓钩点可为active但不参与最近点位的计算
-                    if (worldDistanceSqr <= gpActiveDistanceSqr && 
+                    if (worldDistanceSqr <= gpActiveDistanceSqr && worldDistanceSqr > gpShowMinDistanceSqr &&
                         !Physics.Linecast(Camera.main.transform.position, gPointUI.transform.position))
                     {
                         // 计算距离屏幕中心位置最近的抓钩点
@@ -96,13 +99,14 @@ public class UIElementManager : MonoBehaviour
             if (prevNearestGrapplePointUI != null)
             {
                 if (prevNearestGrapplePointUI != nearestGrapplePointUI || 
-                    (player.transform.position - nearestGrapplePointUI.transform.position).sqrMagnitude > gpActiveDistanceSqr)
+                    (player.transform.position - prevNearestGrapplePointUI.transform.position).sqrMagnitude > gpActiveDistanceSqr)
                 {
                     prevNearestGrapplePointUI.GetComponent<Image>().color = Color.white;
                 }
             }
 
-            if (nearestGrapplePointUI != null && 
+            if (nearestGrapplePointUI != null &&
+                (player.transform.position - nearestGrapplePointUI.transform.position).sqrMagnitude > gpShowMinDistanceSqr &&
                 (player.transform.position - nearestGrapplePointUI.transform.position).sqrMagnitude <= gpActiveDistanceSqr)
             {
                 nearestGrapplePointUI.GetComponent<Image>().color = Color.green;
