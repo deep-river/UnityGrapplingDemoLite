@@ -4,25 +4,19 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    [SerializeField]
-    private float _mouseSensitivity = 3.0f;
-    private float _rotationY;
-    private float _rotationX;
-
-    [SerializeField]
     public Transform target;
 
-    [SerializeField]
-    private float _distanceFromTarget = 3.0f;
+    [SerializeField] private float _distanceFromTarget = 3.0f;
 
+    [SerializeField] private float _mouseSensitivity = 3.0f;
+    [SerializeField] private Vector2 _rotationXMinMax = new Vector2(-40, 40);
+
+    private float _rotationY;
+    private float _rotationX;
     private Vector3 _currentRotation;
+
     private Vector3 _smoothVelocity = Vector3.zero;
-
-    [SerializeField]
-    private float _smoothTime = 0.2f;
-
-    [SerializeField]
-    private Vector2 _rotationXMinMax = new Vector2(-40, 40);
+    [SerializeField] private float _smoothTime = 0.2f;
 
     void LateUpdate()
     {
@@ -31,7 +25,6 @@ public class CameraMovement : MonoBehaviour
 
         _rotationY += mouseX;
         _rotationX -= mouseY;
-
         _rotationX = Mathf.Clamp(_rotationX, _rotationXMinMax.x, _rotationXMinMax.y);
 
         Vector3 nextRotation = new Vector3(_rotationX, _rotationY);

@@ -34,7 +34,7 @@ public class CharacterSkillController : MonoBehaviour
 
     private void StartGrapple()
     {
-        GameObject grapplePoint = uiManager.nearestUI;
+        GameObject grapplePoint = uiManager.nearestGrapplePointUI;
         if (grapplePoint != null && grappleGunPoint != null)
         {
             grappling = true;

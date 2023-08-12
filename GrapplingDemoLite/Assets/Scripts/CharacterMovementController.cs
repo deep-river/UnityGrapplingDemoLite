@@ -14,7 +14,7 @@ public class CharacterMovementController : MonoBehaviour
 
     private Vector3 moveDirection;
 
-    CharacterController controller;
+    private CharacterController controller;
 
     private void Start()
     {
@@ -28,7 +28,6 @@ public class CharacterMovementController : MonoBehaviour
 
         moveDirection = new Vector3(x, 0, z).normalized;
 
-        Debug.Log(controller.velocity);
         if (controller.velocity != Vector3.zero)
         {
             _targetRotation = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg +
