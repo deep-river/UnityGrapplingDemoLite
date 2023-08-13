@@ -32,9 +32,7 @@ public class UIElementManager : MonoBehaviour
 
     void Start()
     {
-        gpShowMinDistanceSqr = grapplePointShowMinDistance * grapplePointShowMinDistance;
-        gpShowMaxDistanceSqr = grapplePointShowMaxDistance * grapplePointShowMaxDistance;
-        gpActiveDistanceSqr = grapplePointActiveDistance * grapplePointActiveDistance;
+        InitDistanceVals();
 
         player = GameObject.FindWithTag("Player");
 
@@ -48,6 +46,13 @@ public class UIElementManager : MonoBehaviour
     private void Update()
     {
         UpdateOutOfViewIndicator();
+    }
+
+    private void InitDistanceVals()
+    {
+        gpShowMinDistanceSqr = grapplePointShowMinDistance * grapplePointShowMinDistance;
+        gpShowMaxDistanceSqr = grapplePointShowMaxDistance * grapplePointShowMaxDistance;
+        gpActiveDistanceSqr = grapplePointActiveDistance * grapplePointActiveDistance;
     }
 
     private void InitGrapplePointsUI(GrapplePoint[] grapplePointsList)
@@ -103,7 +108,7 @@ public class UIElementManager : MonoBehaviour
         }
     }
 
-    // 将距离屏幕中心点最近的抓钩点设为绿色
+    // 将距离屏幕中心点最近的抓钩点显示为绿色
     private void UpdateNearestGrapplePointUI()
     {
         if (prevNearestGrapplePointUI != null)

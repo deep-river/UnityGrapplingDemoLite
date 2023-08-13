@@ -33,10 +33,12 @@ public class GrappleController : MonoBehaviour
         }
     }
 
+    /*
     private void LateUpdate()
     {
         if (grappling) lineRenderer.SetPosition(0, grappleCastPoint.transform.position);
     }
+    */
 
     private void StartGrapple()
     {
@@ -50,7 +52,7 @@ public class GrappleController : MonoBehaviour
             Invoke(nameof(ExecuteGrapple), fixedHookLaunchDelay);
 
             lineRenderer.enabled = true;
-            lineRenderer.SetPosition(1, grappleTargetPoint.transform.position);
+            // lineRenderer.SetPosition(1, grappleTargetPoint.transform.position);
         }
     }
 
