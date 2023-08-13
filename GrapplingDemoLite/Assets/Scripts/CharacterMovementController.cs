@@ -67,12 +67,15 @@ public class CharacterMovementController : MonoBehaviour
     public IEnumerator LaunchToPosition(Vector3 targetPos, Vector3 offset, float travelDuration)
     {
         float startTime = Time.time;
-
         while (Time.time < startTime + travelDuration)
         {
-            float t = (Time.time - startTime) / travelDuration;
+            // float t = (Time.time - startTime) / travelDuration;
+            // gameObject.transform.position = Vector3.LerpUnclamped(gameObject.transform.position, targetPos + offset, Mathf.SmoothStep(0, 1, t));
 
-            gameObject.transform.position = Vector3.LerpUnclamped(gameObject.transform.position, targetPos + offset, Mathf.SmoothStep(0, 1, t));
+            float speed = Vector3.Distance(transform.position, targetPos + offset) / travelDuration;
+            Vector3 moveDir = (targetPos + offset - transform.position).normalized;
+            float moveAmount = speed * Time.fixedDeltaTime;
+            transform.position += moveDir * moveAmount;
 
             yield return null;
         }

@@ -13,7 +13,8 @@ public class GrappleController : MonoBehaviour
     private GameObject grappleTargetPoint;
     private float grappleTravelDistance;
 
-    public float hookLaunchSpeed = 15f;
+    // public float hookLaunchSpeed = 15f;
+    public float fixedHookLaunchDelay = 0.5f;
     public float grappleTravelSpeed = 15f;
     public Vector3 grappleTargetOffset = Vector3.zero;
 
@@ -45,7 +46,8 @@ public class GrappleController : MonoBehaviour
         {
             grappling = true;
             grappleTravelDistance = Vector3.Distance(grappleCastPoint.position, grappleTargetPoint.transform.position);
-            Invoke(nameof(ExecuteGrapple), grappleTravelDistance / hookLaunchSpeed);
+            // Invoke(nameof(ExecuteGrapple), grappleTravelDistance / hookLaunchSpeed);
+            Invoke(nameof(ExecuteGrapple), fixedHookLaunchDelay);
 
             lineRenderer.enabled = true;
             lineRenderer.SetPosition(1, grappleTargetPoint.transform.position);
@@ -69,5 +71,15 @@ public class GrappleController : MonoBehaviour
         movement.freeze = false;
         lineRenderer.enabled = false;
         grappleTargetPoint = null;
+    }
+
+    public bool IsGrappling()
+    {
+        return grappling;
+    }
+
+    public Vector3 GetGrapplePoint()
+    {
+        return grappleTargetPoint.transform.position;
     }
 }

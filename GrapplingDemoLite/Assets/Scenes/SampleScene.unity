@@ -2947,12 +2947,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   indicator: {fileID: 1847074887}
-  upperPosRatio: 0.9
-  lowerPosRatio: 0.1
-  leftPosRatio: 0.1
-  rightPosRatio: 0.1
-  horizontalPosRatio: 0.9
-  verticalPosRatio: 0.9
+  verticalPosRatio: 0.85
+  horizontalPosRatio: 0.85
   targetPos: {x: 0, y: 0, z: 0}
 --- !u!1 &1252425447
 GameObject:
@@ -5355,6 +5351,6 @@ MonoBehaviour:
   uiManager: {fileID: 1790838175}
   lineRenderer: {fileID: 1808562308}
   grappleCastPoint: {fileID: 1808562307}
-  hookLaunchSpeed: 20
-  grappleTravelSpeed: 15
+  fixedHookLaunchDelay: 0.5
+  grappleTravelSpeed: 12
   grappleTargetOffset: {x: 0, y: 1, z: 0}
